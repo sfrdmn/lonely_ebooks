@@ -1,0 +1,1 @@
+{"_id":"_design/words","_rev":"4-68578f028884dad64b869f5ade52c8be","views":{"all":{"map":"function(doc) { emit(doc._id, doc); }"}}}
