@@ -8,8 +8,5 @@ OneLuv_Ebooks
 Ten_Ebooks
 Twenty_Ebooks
 Ebooks
-Sigh_Ebooks
-Solitary_Ebooks
-Solemn_Ebooks
-Depressed_Ebooks
-Happiness_Ebooks
+Jpeg_Ebooks
+ebooks.biz
