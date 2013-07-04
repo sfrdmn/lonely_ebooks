@@ -1,30 +1,65 @@
 module.exports = function(grunt) {
 
+  var templateData = {
+    web: {},
+    phonegap: {}
+  }
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    watch: {
-      files: ['js/**/*.js', 'css/**/*.css', 'index.html'],
+    'copy': {
+      all: {
+        files: [
+          {expand: true, src: 'css/**/*.css', dest: 'build/'}
+        ]
+      }
+    },
+    'compile-handlebars': {
+      web: {
+        templateData: {
+          build_web: true,
+          test: 'ok'
+        },
+        template: 'index.hbs',
+        output: 'build/index.html'
+      },
+      phonegap: {
+        templateData: {
+          build_phonegap: true,
+          test: 'riguht on'
+        },
+        template: 'index.hbs',
+        output: 'build/index.html'
+      }
+    },
+    'watch': {
+      files: ['js/**/*.js', 'css/**/*.css', 'index.hbs'],
       tasks: ['default']
     },
-    browserify: {
-      'build/bundle.js': ['js/index.js']
+    'browserify': {
+      options: {
+        alias: ['js/src/app.js:LonelyEbooks']
+      },
+      'build/js/bundle.js': 'js/src/app.js'
     },
-    uglify: {
+    'uglify': {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
-      src: 'build/bundle.js',
-      dest: 'build/bundle.min.js'
+      src: 'build/js/bundle.js',
+      dest: 'build/js/bundle.min.js'
     }
   })
 
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-compile-handlebars')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-browserify')
 
   // Default task(s).
-  grunt.registerTask('default', ['browserify'])
-  grunt.registerTask('build', ['browserify', 'uglify'])
+  grunt.registerTask('default', ['browserify', 'compile-handlebars:web', 'copy'])
+  grunt.registerTask('build web', ['browserify', 'compile-handlebars:web', 'copy', 'uglify'])
 
 }
