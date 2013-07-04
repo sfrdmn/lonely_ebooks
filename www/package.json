@@ -1,0 +1,36 @@
+{
+  "name": "lonely_ebooks",
+  "version": "0.0.0",
+  "description": "ERROR: No README.md file found!",
+  "main": "./js/index.js",
+  "scripts": {
+    "test": "jasmine-node ./spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sfrdmn/lonely_ebooks"
+  },
+  "keywords": [
+    "lonely",
+    "so",
+    "lonely",
+    ":'("
+  ],
+  "author": "Sean Fridman",
+  "license": "BSD",
+  "devDependencies": {
+    "jasmine-node": "~1.10.1",
+    "grunt": "~0.4.1",
+    "grunt-browserify": "~1.2.0",
+    "grunt-contrib-cssmin": "~0.6.1",
+    "grunt-contrib-htmlmin": "~0.1.3",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-jasmine": "~0.5.1",
+    "grunt-beep": "~0.2.0"
+  },
+  "dependencies": {
+    "browserify": "~2.23.1",
+    "browsernizr": "~1.0.0"
+  }
+}
