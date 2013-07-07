@@ -1,5 +1,9 @@
+# LONELY_EBOOKS
+
 build/
 node_modules/
+settings.json
+
 # ANDROID / ECLIPSE
 
 # built application files
