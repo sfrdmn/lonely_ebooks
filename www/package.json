@@ -33,6 +33,9 @@
   },
   "dependencies": {
     "browserify": "~2.23.1",
-    "browsernizr": "~1.0.0"
+    "browsernizr": "~1.0.0",
+    "felix-couchdb": "~1.0.7",
+    "winston": "~0.7.2",
+    "async": "~0.2.9"
   }
 }
