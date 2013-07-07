@@ -39,9 +39,9 @@ module.exports = function(grunt) {
     },
     'browserify': {
       options: {
-        alias: ['js/src/app.js:LonelyEbooks']
+        alias: ['js/app.js:LonelyEbooks']
       },
-      'build/js/bundle.js': 'js/src/app.js'
+      'build/js/bundle.js': 'js/app.js'
     },
     'uglify': {
       options: {

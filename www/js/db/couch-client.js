@@ -1,27 +1,47 @@
-/**
- * Pre-configure couch client with app settings
- */
-
+var _ = require('lodash')
 var settings = require('../../settings.json')
 var env = settings.env
 var options = settings.couchdb[env]
 var logger = require('../util/logger.js')
 var url = require('url')
-var couchdb = require('felix-couchdb')
+var path = require('path')
+var hyperquest = require('hyperquest')
+var es = require('event-stream')
+var JSONStream = require('JSONStream')
 
-var urlObj = options.urlObj
-var creds = []
-var clientArgs = [urlObj.port, urlObj.hostname]
+function CouchClient(options) {
+	this.options = options || {}
+	this.urlObj = options.urlObj || {}
+	this.urlObj.query = this.urlObj.query || {}
+}
 
-if (urlObj.auth)
-	creds = urlObj.auth.split(':')
 
-if (creds.length)
-	clientArgs.concat([creds[0], creds[1], 11, true])
+// returns an object mode stream
+CouchClient.prototype.createViewStream = function(ddoc, view, query, parseString) {
+	var urlObj = this._extendUrlObj(['_design', ddoc, '_view', view], query)
+	var parseString = parseString || 'rows.*'
+	return es.pipeline(
+		hyperquest(url.format(urlObj)),
+		JSONStream.parse(parseString)
+	)
+}
 
-var couchClient = couchdb.createClient.apply(couchdb, clientArgs)
-var dbClient = couchClient.db(urlObj.pathname.slice(1))
+CouchClient.prototype._extendUrlObj = function(pathname, query) {
+	var newUrlObj = _.cloneDeep(this.urlObj)
+	if (pathname) {
+		if (pathname instanceof Array) {
+			pathname = path.join.apply(path, pathname)
+		}
+		newUrlObj.pathname = path.join(newUrlObj.pathname, pathname)
+	}
+	if (query && newUrlObj.query) {
+		newUrlObj.query = _.extend(newUrlObj.query, query)
+	}
+	return newUrlObj
+}
 
-logger.info('Created couch client!', url.format(urlObj))
+var client = new CouchClient(options)
 
-module.exports = dbClient
+logger.info('Created couch client', {url: url.format(client.urlObj)})
+
+module.exports = client

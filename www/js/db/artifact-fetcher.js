@@ -3,31 +3,33 @@ var env = settings.env
 var couchOptions = settings.couchdb[env]
 var appOptions = settings.app
 var db = require('./couch-client.js')
-var async = require('async')
+var logger = require('../util/logger.js')
+var es = require('event-stream')
 
 var ArtifactFetcher = function() {}
 
-ArtifactFetcher.prototype.fetchArtifacts = function(count, callback) {
-  async.waterfall([
+ArtifactFetcher.prototype.fetchArtifacts = function(count, mapFn) {
+	var mapFn = mapFn || defaultMapFn
 
-    async.apply(queryView, count, callback),
+	logger.info('Fetching ' + count + ' artifacts')
 
-    // If no results, we queried the end of the view
-    // So make another request for the beginning
-	function(results, callback) {
-  	  if (results && results.rows) {
-  	    if (!results.rows.length) {
-  	    }
-  	  }
-  	}
-  ])
+	return es.pipeline(
+	  createArtifactStream(count),
+	  es.map(mapFn)
+	)
+
+	function createArtifactStream(count) {
+  	  return db.createViewStream(couchOptions.ddoc, couchOptions.views.random, {
+	    'startkey': Math.random(),
+	    'limit': count,
+	    'include_docs': true
+      }, 'rows.*.doc')
+    }
+
+    function defaultMapFn(artifact, callback) {
+    	logger.info('Got artifact:', artifact)
+    	callback(null, artifact)
+    }
 }
 
-function queryView(count, callback) {
-  return db.view(couchOptions.ddoc, couchOptions.views.random, {
-	'startkey': Math.random(),
-	'limit': count
-  })
-}
-
-module.exports = ArtifactFetcher
+module.exports = new ArtifactFetcher()

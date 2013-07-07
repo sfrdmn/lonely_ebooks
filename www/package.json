@@ -34,8 +34,8 @@
   "dependencies": {
     "browserify": "~2.23.1",
     "browsernizr": "~1.0.0",
-    "felix-couchdb": "~1.0.7",
-    "winston": "~0.7.2",
-    "async": "~0.2.9"
+    "hyperquest": "~0.1.7",
+    "JSONStream": "~0.6.4",
+    "event-stream": "~3.0.15"
   }
 }
