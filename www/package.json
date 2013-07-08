@@ -36,6 +36,7 @@
     "browsernizr": "~1.0.0",
     "hyperquest": "~0.1.7",
     "JSONStream": "~0.6.4",
-    "event-stream": "~3.0.15"
+    "event-stream": "~3.0.15",
+    "concat-stream": "~1.0.0"
   }
 }
