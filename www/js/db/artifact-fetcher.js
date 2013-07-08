@@ -8,28 +8,14 @@ var es = require('event-stream')
 
 var ArtifactFetcher = function() {}
 
-ArtifactFetcher.prototype.fetchArtifacts = function(count, mapFn) {
-	var mapFn = mapFn || defaultMapFn
-
+ArtifactFetcher.prototype.fetchArtifacts = function(count) {
 	logger.info('Fetching ' + count + ' artifacts')
 
-	return es.pipeline(
-	  createArtifactStream(count),
-	  es.map(mapFn)
-	)
-
-	function createArtifactStream(count) {
-  	  return db.createViewStream(couchOptions.ddoc, couchOptions.views.random, {
-	    'startkey': Math.random(),
-	    'limit': count,
-	    'include_docs': true
-      }, 'rows.*.doc')
-    }
-
-    function defaultMapFn(artifact, callback) {
-    	logger.info('Got artifact:', artifact)
-    	callback(null, artifact)
-    }
+	return db.createViewStream(couchOptions.ddoc, couchOptions.views.random, {
+	  'startkey': Math.random(),
+	  'limit': count,
+	  'include_docs': true
+    }, 'rows.*.doc')
 }
 
 module.exports = new ArtifactFetcher()
