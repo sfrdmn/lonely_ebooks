@@ -25,9 +25,18 @@
     </head>
     <body>
 
-        {{ test }}
+    <canvas id="viewport">
+        Your browser does not support HTML canvas
+    </canvas>     
+    
+    {{#build_dev}}   
+            <script src="js/easeljs-0.6.1.min.js"></script>
+            <script src="js/preloadjs-0.3.1.min.js"></script>
+            <script src="js/soundjs-0.4.1.min.js"></script>
+            <script src="js/tweenjs-0.4.1.min.js"></script>
+            <script src="js/bundle.js"></script>
+    {{/build_dev}}
 
-        <script src="js/bundle.js"></script>
         <script type="text/javascript">
             var App = require('LonelyEbooks')
             {{#build_web}}

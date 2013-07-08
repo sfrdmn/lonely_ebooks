@@ -11,7 +11,11 @@ module.exports = function(grunt) {
     'copy': {
       all: {
         files: [
-          {expand: true, src: 'css/**/*.css', dest: 'build/'}
+          {expand: true, src: 'css/**/*.css', dest: 'build/'},
+          {src: 'js/lib/easeljs-0.6.1.min.js', dest: 'build/js/easeljs-0.6.1.min.js'},
+          {src: 'js/lib/preloadjs-0.3.1.min.js', dest: 'build/js/preloadjs-0.3.1.min.js'},
+          {src: 'js/lib/soundjs-0.4.1.min.js', dest: 'build/js/soundjs-0.4.1.min.js'},
+          {src: 'js/lib/tweenjs-0.4.1.min.js', dest: 'build/js/tweenjs-0.4.1.min.js'}
         ]
       }
     },
@@ -19,7 +23,7 @@ module.exports = function(grunt) {
       web: {
         templateData: {
           build_web: true,
-          test: 'ok'
+          build_dev: true
         },
         template: 'index.hbs',
         output: 'build/index.html'
@@ -27,7 +31,6 @@ module.exports = function(grunt) {
       phonegap: {
         templateData: {
           build_phonegap: true,
-          test: 'riguht on'
         },
         template: 'index.hbs',
         output: 'build/index.html'
@@ -39,10 +42,7 @@ module.exports = function(grunt) {
     },
     'browserify': {
       options: {
-        alias: [
-          'js/app.js:LonelyEbooks',
-          'js/lib/caat.js:caat'
-        ]
+        alias: ['js/app.js:LonelyEbooks']
       },
       'build/js/bundle.js': 'js/app.js'
     },
