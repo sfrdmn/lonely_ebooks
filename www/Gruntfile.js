@@ -39,7 +39,10 @@ module.exports = function(grunt) {
     },
     'browserify': {
       options: {
-        alias: ['js/app.js:LonelyEbooks']
+        alias: [
+          'js/app.js:LonelyEbooks',
+          'js/lib/caat.js:caat'
+        ]
       },
       'build/js/bundle.js': 'js/app.js'
     },
