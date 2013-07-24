@@ -14,42 +14,38 @@
                                         target-densitydpi=device-dpi" />
         <meta http-equiv="cleartype" content="on">
 
-        {{#build_web}}
+        {{#isWeb}}
             <meta name="apple-mobile-web-app-capable" content="yes">
             <meta name="apple-mobile-web-app-status-bar-style" content="black">
             <meta name="apple-mobile-web-app-title" content="">
-        {{/build_web}}
+        {{/isWeb}}
 
-        <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css">
+        {{#css}}
+          <link rel="stylesheet" href="/{{.}}">
+        {{/css}}
     </head>
     <body>
 
-    <canvas id="viewport">
-        Your browser does not support HTML canvas
-    </canvas>     
-    
-    {{#build_dev}}   
-            <script src="js/easeljs-0.6.1.min.js"></script>
-            <script src="js/preloadjs-0.3.1.min.js"></script>
-            <script src="js/soundjs-0.4.1.min.js"></script>
-            <script src="js/tweenjs-0.4.1.min.js"></script>
-            <script src="js/bundle.js"></script>
-    {{/build_dev}}
+      <canvas id="viewport">
+          Your browser does not support HTML canvas
+      </canvas>
 
-        <script type="text/javascript">
-            var App = require('LonelyEbooks')
-            {{#build_web}}
-                document.addEventListener('DOMContentLoaded', function() {
-                    window.app = new App()
-                }, false)
-            {{/build_web}}
+      {{#js}}
+        <script src="/{{.}}"></script>
+      {{/js}}
 
-            {{#build_phonegap}}
-                document.addEventListener('deviceready', function() {
-                    window.app = new App()
-                }, false)
-            {{/build_phonegap}}
-        </script>
+      <script>
+          {{#isWeb}}
+              document.addEventListener('DOMContentLoaded', function() {
+                  window.app = new lonely.App()
+              }, false)
+          {{/isWeb}}
+
+          {{#isPhonegap}}
+              document.addEventListener('deviceready', function() {
+                  window.app = new lonely.App()
+              }, false)
+          {{/isPhonegap}}
+      </script>
     </body>
 </html>

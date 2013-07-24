@@ -1,50 +1,64 @@
+var Handlebars = require('handlebars')
+
 module.exports = function(grunt) {
 
-  var templateData = {
-    web: {},
-    phonegap: {}
-  }
+  var _ = grunt.util._
+  var pkg = grunt.file.readJSON('package.json')
+  var vendorDir = 'vendor/'
+  var buildDir = 'build/'
+  var lonelyDir = 'src/'
+  var jsDeps = pkg.vendorDependencies.map(function(dep) {
+    return 'js/' + vendorDir + dep
+  }).concat(pkg.lonelyDependencies.map(function(dep) {
+    return 'js/' + lonelyDir + dep
+  }))
+  var cssDeps = pkg.cssDependencies.map(function(dep) {
+    return 'css/' + dep
+  })
 
   // Project configuration.
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    'copy': {
-      all: {
-        files: [
-          {expand: true, src: 'css/**/*.css', dest: 'build/'},
-          {src: 'js/lib/easeljs-0.6.1.min.js', dest: 'build/js/easeljs-0.6.1.min.js'},
-          {src: 'js/lib/preloadjs-0.3.1.min.js', dest: 'build/js/preloadjs-0.3.1.min.js'},
-          {src: 'js/lib/soundjs-0.4.1.min.js', dest: 'build/js/soundjs-0.4.1.min.js'},
-          {src: 'js/lib/tweenjs-0.4.1.min.js', dest: 'build/js/tweenjs-0.4.1.min.js'}
-        ]
-      }
-    },
-    'compile-handlebars': {
+    pkg: pkg,
+    'env-compile': {
+      files: [{src: 'index.hbs', dest: buildDir + 'index.html'}],
+      production: {
+        data: {
+          isProduction: true,
+          js: [ buildDir + 'js/app.min.js' ],
+          css: [ buildDir + 'css/app.min.css' ]
+        }
+      },
+      dev: {
+        data: {
+          isDev: true,
+          js: jsDeps,
+          css: cssDeps
+        }
+      },
       web: {
-        templateData: {
-          build_web: true,
-          build_dev: true
-        },
-        template: 'index.hbs',
-        output: 'build/index.html'
+        data: {
+          isWeb: true
+        }
       },
       phonegap: {
-        templateData: {
-          build_phonegap: true,
-        },
-        template: 'index.hbs',
-        output: 'build/index.html'
+        files: '<%= envcompile.files %>',
+        data: {
+          isPhonegap: true
+        }
+      }
+    },
+    'copy': {
+      dev: {
+        files: [
+          {expand: true, src: 'css/**/*.css', dest: buildDir},
+          {expand: true, src: 'js/' + lonelyDir + '*.js', dest: buildDir},
+          {expand: true, src: 'js/' + vendorDir + '*.js', dest: buildDir}
+        ]
       }
     },
     'watch': {
       files: ['js/**/*.js', 'css/**/*.css', 'index.hbs'],
-      tasks: ['default']
-    },
-    'browserify': {
-      options: {
-        alias: ['js/app.js:LonelyEbooks']
-      },
-      'build/js/bundle.js': 'js/app.js'
+      tasks: ['default', 'beep']
     },
     'uglify': {
       options: {
@@ -55,14 +69,53 @@ module.exports = function(grunt) {
     }
   })
 
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-compile-handlebars')
+  grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-uglify')
-  grunt.loadNpmTasks('grunt-browserify')
+  grunt.loadNpmTasks('grunt-beep')
+
+  // Tasks to build template data
+  grunt.registerMultiTask('env-compile', 'Merge multiple data contexts and compile template', function(a, b, c) {
+    var self = this
+    var name = this.name || 'env-compile'
+    var templateData = {}
+    var targets = [this.target].concat([].slice.call(arguments))
+    grunt.verbose.writeln('Targets:', targets)
+    var files = grunt.config([name, 'files']) || []
+    if (!targets.length)
+      throw new Error('No targets for env-compile!')
+    if (!files.length)
+      throw new Error('No files for env-compile!')
+
+    targets.forEach(function(target) {
+      var srcData = grunt.config([name, target, 'data'])
+      grunt.verbose.writeln('Merging target ' + target + ':', srcData)
+      mergeTemplateData(templateData, srcData)
+    })
+    files.forEach(function(file) {
+      var templateFile = grunt.file.read(file.src)
+      var template = Handlebars.compile(templateFile)
+      var outputFile = template(templateData)
+      grunt.verbose.writeln('Writing ' + file.dest + ' with:', templateData)
+      grunt.file.write(file.dest, outputFile)
+    })
+
+    function mergeTemplateData(dest, src) {
+      // concat if array
+      return _.extend(dest, src, function(destVal, srcVal) {
+        if (Array.isArray(destVal) && Array.isArray(srcVal))
+          return destVal.concat(srcVal)
+        else
+          return srcVal
+      })
+    }
+  })
 
   // Default task(s).
-  grunt.registerTask('default', ['browserify', 'compile-handlebars:web', 'copy'])
-  grunt.registerTask('build web', ['browserify', 'compile-handlebars:web', 'copy', 'uglify'])
+  grunt.registerTask('dev web', ['env-compile:dev:web', 'copy:dev'])
+  grunt.registerTask('dev phonegap', ['env-compile:dev:phonegap', 'copy:dev'])
+  grunt.registerTask('build web', ['env-compile:production:web'])
+  grunt.registerTask('build phonegap', ['env-compile:production:phonegap'])
 
+  grunt.renameTask('dev web', 'default')
 }
