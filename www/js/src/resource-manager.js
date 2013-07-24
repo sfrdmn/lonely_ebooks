@@ -1,49 +1,24 @@
-var es = require('event-stream')
-var settings = require('../../settings.json')
-var env = settings.env
-var logger = require('./logger.js')
-var CouchClient = require('./couch-client.js')
+;(function() {
 
-function ResourceManager() {
-	this.couchOptions = settings.couchdb[env]
-	this.couch = new CouchClient(this.couchOptions)
-}
+  var createjs = lonely.require('createjs')
 
-/**
- * Fetch artifact data from server
- */
-ResourceManager.prototype.createArtifactStream = function(count) {
-	return this.couch.createViewStream(
-			this.couchOptions.ddoc, this.couchOptions.views.random, {
-	  'startkey': Math.random(),
-	  'limit': count,
-	  'include_docs': true
-    }, 'rows.*.doc')
-}
+  function ResourceManager() {
+    this.queue = createjs.LoadQueue()
+  }
 
-/**
- * Asynchronously load images associated with image metadata and attach
- * to artifact object
- */
-ResourceManager.prototype.createImageLoadStream = function() {
-	return es.map(function(data, callback) {
-		if (data.url) {
-			var image = data.image = new Image()
-			image.src = data.url
-			image.onload = onLoad
-			image.onError = onError
-		} else {
-			callback(new Error('No image metadata in artifact'))
-		}
+  ResourceManager.prototype.loadAll = function loadAll(resources, callback, load) {
+    var _resources = resources || {}
+    var _callback = typeof callback === 'function' ? callback : function() {}
+    var _load = typeof load === 'undefined' ? true : load
 
-		function onLoad() {
-			callback(null, data)
-		}
+    this.queue.loadManifest(_resources, _load)
+    this.queue.addEventListener('complete', callback)
+  }
 
-		function onError(err) {
-			callback(new Error('Could not load image'))
-		}
-	})
-}
+  ResourceManager.prototype.loadArtifacts = function loadArtifacts(count, callback) {
 
-module.exports = ResourceManager
+  }
+
+  lonely.export('ResourceManager', ResourceManager)
+
+})()
