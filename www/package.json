@@ -34,11 +34,15 @@
   },
   "vendorDependencies": [
     "mbp.js",
+    "lodash.js",
     "easeljs-0.6.1.min.js",
     "preloadjs-0.3.1.min.js",
     "soundjs-0.4.1.min.js",
     "tweenjs-0.4.1.min.js"
   ],
-  "lonelyDependencies": [],
+  "lonelyDependencies": [
+    "base.js",
+    "app.js"
+  ],
   "cssDependencies": []
 }
