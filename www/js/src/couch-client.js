@@ -1,8 +1,5 @@
 var _ = require('lodash')
-var settings = require('../../settings.json')
-var env = settings.env
-var options = settings.couchdb[env]
-var logger = require('../util/logger.js')
+var logger = require('./logger.js')
 var url = require('url')
 var path = require('path')
 var hyperquest = require('hyperquest')
@@ -13,6 +10,7 @@ function CouchClient(options) {
 	this.options = options || {}
 	this.urlObj = options.urlObj || {}
 	this.urlObj.query = this.urlObj.query || {}
+	logger.info('Created couch client', {url: url.format(this.urlObj)})
 }
 
 
@@ -20,9 +18,12 @@ function CouchClient(options) {
 CouchClient.prototype.createViewStream = function(ddoc, view, query, parseString) {
 	var urlObj = this._extendUrlObj(['_design', ddoc, '_view', view], query)
 	var parseString = parseString || 'rows.*'
+	var httpStream = hyperquest(url.format(urlObj))
+	var jsonStream = JSONStream.parse(parseString)
+
 	return es.pipeline(
-		hyperquest(url.format(urlObj)),
-		JSONStream.parse(parseString)
+		httpStream,
+		jsonStream
 	)
 }
 
@@ -40,8 +41,4 @@ CouchClient.prototype._extendUrlObj = function(pathname, query) {
 	return newUrlObj
 }
 
-var client = new CouchClient(options)
-
-logger.info('Created couch client', {url: url.format(client.urlObj)})
-
-module.exports = client
+module.exports = CouchClient
