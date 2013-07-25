@@ -86,7 +86,7 @@ module.exports = function(grunt) {
       // }
     },
     'watch': {
-      files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'package.json'],
+      files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'settings.json'],
       tasks: ['default', 'beep']
     },
     'uglify': {
