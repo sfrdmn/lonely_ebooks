@@ -35,6 +35,8 @@
       {{/js}}
 
       <script>
+          var lonely = require('lonely')
+
           {{#isWeb}}
               document.addEventListener('DOMContentLoaded', function() {
                   window.app = new lonely.App()

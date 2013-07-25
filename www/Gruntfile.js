@@ -1,31 +1,29 @@
 var Handlebars = require('handlebars')
+var moduleify = require('moduleify')
 
 module.exports = function(grunt) {
 
   var _ = grunt.util._
   var pkg = grunt.file.readJSON('package.json')
-  var vendorDir = 'vendor/'
   var buildDir = 'build/'
-  var lonelyDir = 'src/'
-  var jsDeps = pkg.vendorDependencies.map(function(dep) {
-    return 'js/' + vendorDir + dep
-  }).concat(pkg.lonelyDependencies.map(function(dep) {
-    return 'js/' + lonelyDir + dep
-  }))
-  var cssDeps = pkg.cssDependencies.map(function(dep) {
-    return 'css/' + dep
-  })
+  var jsDeps = [
+    'js/bundle.js'
+  ]
+  var cssDeps = [
+    'css/normalize.css',
+    'css/main.css'
+  ]
 
   // Project configuration.
   grunt.initConfig({
     pkg: pkg,
     'env-compile': {
-      files: [{src: 'index.hbs', dest: buildDir + 'index.html'}],
+      files: [{src: 'index.hbs', dest: 'build/index.html'}],
       production: {
         data: {
           isProduction: true,
-          js: [ buildDir + 'js/app.min.js' ],
-          css: [ buildDir + 'css/app.min.css' ]
+          js: [ '/js/app.min.js' ],
+          css: [ '/css/app.min.css' ]
         }
       },
       dev: {
@@ -47,14 +45,43 @@ module.exports = function(grunt) {
         }
       }
     },
-    'copy': {
-      dev: {
-        files: [
-          {expand: true, src: 'css/**/*.css', dest: buildDir},
-          {expand: true, src: 'js/' + lonelyDir + '*.js', dest: buildDir},
-          {expand: true, src: 'js/' + vendorDir + '*.js', dest: buildDir}
-        ]
+    'concat': {
+      createjs: {
+        options: {
+          banner: '(function() {',
+          footer: '}).call(window)'
+        },
+        files: [{
+          src: [
+            'js/vendor/easeljs*.js',
+            'js/vendor/tweenjs*.js',
+            'js/vendor/soundjs*.js',
+            'js/vendor/preloadjs*.js'
+          ],
+          dest: 'build/js/create.js'
+        }]
       }
+    },
+    'browserify': {
+      options: {
+        alias: [
+          'js/index.js:lonely',
+          'build/js/create.js:createjs'
+        ],
+        transform: [moduleify({
+          'build/js/create.js': 'createjs'
+        })]
+      },
+      'build/js/bundle.js': 'js/app.js'
+    },
+    'copy': {
+      // dev: {
+      //   files: [
+      //     {expand: true, src: 'css/**/*.css', dest: builddir},
+      //     {expand: true, src: 'js/' + lonelydir + '*.js', dest: builddir},
+      //     {expand: true, src: 'js/' + vendordir + '*.js', dest: builddir}
+      //   ]
+      // }
     },
     'watch': {
       files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'package.json'],
@@ -64,18 +91,14 @@ module.exports = function(grunt) {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
-      src: 'build/js/bundle.js',
-      dest: 'build/js/bundle.min.js'
+      files: [
+      ]
     }
   })
 
-  grunt.loadNpmTasks('grunt-contrib-copy')
-  grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-contrib-uglify')
-  grunt.loadNpmTasks('grunt-beep')
-
   // Tasks to build template data
-  grunt.registerMultiTask('env-compile', 'Merge multiple data contexts and compile template', function(a, b, c) {
+  grunt.registerMultiTask('env-compile', 'Merge multiple data contexts and compile template',
+      function() {
     var self = this
     var name = this.name || 'env-compile'
     var templateData = {}
@@ -111,9 +134,17 @@ module.exports = function(grunt) {
     }
   })
 
+  // npm load
+  grunt.loadNpmTasks('grunt-contrib-copy')
+  grunt.loadNpmTasks('grunt-contrib-concat')
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-contrib-uglify')
+  grunt.loadNpmTasks('grunt-browserify')
+  grunt.loadNpmTasks('grunt-beep')
+
   // Default task(s).
-  grunt.registerTask('dev web', ['env-compile:dev:web', 'copy:dev'])
-  grunt.registerTask('dev phonegap', ['env-compile:dev:phonegap', 'copy:dev'])
+  grunt.registerTask('dev web', ['env-compile:dev:web', 'concat', 'browserify'])
+  grunt.registerTask('dev phonegap', ['env-compile:dev:phonegap'])
   grunt.registerTask('build web', ['env-compile:production:web'])
   grunt.registerTask('build phonegap', ['env-compile:production:phonegap'])
 
