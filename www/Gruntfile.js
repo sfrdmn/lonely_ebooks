@@ -66,9 +66,11 @@ module.exports = function(grunt) {
       options: {
         alias: [
           'js/index.js:lonely',
+          'js/vendor/mbp.js:MBP',
           'build/js/create.js:createjs'
         ],
         transform: [moduleify({
+          'js/vendor/mbp.js': 'MBP',
           'build/js/create.js': 'createjs'
         })]
       },
