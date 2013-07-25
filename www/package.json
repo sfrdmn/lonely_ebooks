@@ -32,5 +32,9 @@
     "grunt-contrib-concat": "~0.3.0",
     "grunt-browserify": "~1.2.1",
     "grunt": "~0.4.1"
+  },
+  "dependencies": {
+    "xhr": "~1.2.3",
+    "clone": "~0.1.9"
   }
 }
