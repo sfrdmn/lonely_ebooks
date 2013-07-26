@@ -10,6 +10,8 @@ function Logger(options) {
   this.configure(options)
 }
 
+var canTrace = typeof (new Error).stack === 'string'
+
 Logger.prototype.configure = function (options) {
   options = options || {}
   if (options.transports && options.transports.length) {
@@ -19,7 +21,7 @@ Logger.prototype.configure = function (options) {
   } else {
     this.addTransport('console')
   }
-  this.logLevel = options.level || 3
+  this._logLevel = options.level || 3
 }
 
 Logger.prototype.addTransport = function (transport) {
@@ -33,6 +35,10 @@ Logger.prototype.addTransport = function (transport) {
 
 Logger.prototype._transport = function (level, msgs) {
   this._transports.forEach(function(transport) {
+    if (level === 'error' && canTrace) {
+      // Get stack trace and trim out logger calls
+      msgs.push('\n' + (new Error).stack.split('\n').slice(5).join('\n'))
+    }
     transport.log(level, msgs)
   })
 }
@@ -52,10 +58,11 @@ function ConsoleTransport() {
 }
 
 ConsoleTransport.prototype.log = function(level, msgs) {
-  if (this._headers[level])
+  if (this._headers[level]) {
     this._console.log.apply(this._console, this._headers[level].concat(msgs))
-  else
+  } else {
     this.log('warn', 'Bad log method for ConsoleTransport')
+  }
 }
 
 ConsoleTransport.headers = {
