@@ -59,11 +59,11 @@ ConsoleTransport.prototype.log = function(level, msgs) {
 }
 
 ConsoleTransport.headers = {
-  'error': ['%c error   ', 'background-color: #e10; color: #eee'],
-  'warn': ['%c warn    ', 'background-color: #ea0; color: #eee'],
-  'info': ['%c info    ', 'background-color: #06a; color: #eee'],
-  'verbose': ['%c verbose ', 'background-color: #d40; color: #eee'],
-  'silly': ['%c silly   ', 'background-color: #a4a; color: #eee'],
+  'error': ['%c  error  ', 'background-color: #e10; color: #eee'],
+  'warn': ['%c  warn   ', 'background-color: #ea0; color: #eee'],
+  'info': ['%c  info   ', 'background-color: #06a; color: #eee'],
+  'verbose': ['%c verbose ', 'background-color: #0a4; color: #eee'],
+  'silly': ['%c  silly  ', 'background-color: #a4a; color: #eee'],
 }
 
 var transports = {
