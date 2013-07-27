@@ -11,7 +11,8 @@ module.exports = function(grunt) {
   ]
   var cssDeps = [
     'css/normalize.css',
-    'css/main.css'
+    'css/main.css',
+    'css/app.css'
   ]
 
   // Project configuration.
@@ -77,13 +78,13 @@ module.exports = function(grunt) {
       'build/js/bundle.js': 'js/app.js'
     },
     'copy': {
-      // dev: {
-      //   files: [
-      //     {expand: true, src: 'css/**/*.css', dest: builddir},
-      //     {expand: true, src: 'js/' + lonelydir + '*.js', dest: builddir},
-      //     {expand: true, src: 'js/' + vendordir + '*.js', dest: builddir}
-      //   ]
-      // }
+      dev: {
+        files: [
+          {expand: true, src: 'css/**/*.css', dest: 'build/'}
+          // {expand: true, src: 'js/' + lonelydir + '*.js', dest: builddir},
+          // {expand: true, src: 'js/' + vendordir + '*.js', dest: builddir}
+        ]
+      }
     },
     'watch': {
       files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'settings.json'],
@@ -145,7 +146,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-beep')
 
   // Default task(s).
-  grunt.registerTask('dev web', ['env-compile:dev:web', 'concat', 'browserify'])
+  grunt.registerTask('dev web', ['env-compile:dev:web', 'concat', 'copy:dev', 'browserify'])
   grunt.registerTask('dev phonegap', ['env-compile:dev:phonegap'])
   grunt.registerTask('build web', ['env-compile:production:web'])
   grunt.registerTask('build phonegap', ['env-compile:production:phonegap'])
