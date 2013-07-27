@@ -27,6 +27,7 @@ ArtifactManager.prototype.fetch = function(count) {
   }, function(err, artifacts) {
     if (err) {
       logger.error('Error fetching artifacts', err)
+      this.emit('error')
     } else {
       logger.info('Fetched artifacts!', artifacts)
       self._process(artifacts)
