@@ -31,7 +31,8 @@
     "moduleify": "~0.1.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-browserify": "~1.2.1",
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0"
   },
   "dependencies": {
     "xhr": "~1.2.3",

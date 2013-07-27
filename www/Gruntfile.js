@@ -86,6 +86,7 @@ module.exports = function(grunt) {
         ]
       }
     },
+    'clean': ['build/js/create.js'],
     'watch': {
       files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'settings.json'],
       tasks: ['default', 'beep']
@@ -140,13 +141,14 @@ module.exports = function(grunt) {
   // npm load
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-contrib-concat')
+  grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-browserify')
   grunt.loadNpmTasks('grunt-beep')
 
   // Default task(s).
-  grunt.registerTask('dev web', ['env-compile:dev:web', 'concat', 'copy:dev', 'browserify'])
+  grunt.registerTask('dev web', ['env-compile:dev:web', 'concat', 'copy:dev', 'browserify', 'clean'])
   grunt.registerTask('dev phonegap', ['env-compile:dev:phonegap'])
   grunt.registerTask('build web', ['env-compile:production:web'])
   grunt.registerTask('build phonegap', ['env-compile:production:phonegap'])
