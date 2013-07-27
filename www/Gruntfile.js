@@ -88,7 +88,7 @@ module.exports = function(grunt) {
     },
     'clean': ['build/js/create.js'],
     'watch': {
-      files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'settings.json'],
+      files: ['js/**/*.js', 'css/**/*.css', 'index.hbs', 'settings.json', 'Gruntfile.js'],
       tasks: ['default', 'beep']
     },
     'uglify': {
