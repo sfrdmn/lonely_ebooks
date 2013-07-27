@@ -7,6 +7,8 @@ function App() {
   amanager.on('ready', (function() {
     var artifact = amanager.next()
     var bitmap = new createjs.Bitmap(artifact.image)
+    bitmap.x = stage.canvas.width * Math.random()
+    bitmap.y = stage.canvas.height * Math.random()
     stage.addChild(bitmap)
     stage.update()
   }).bind(this))
